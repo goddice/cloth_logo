@@ -77,14 +77,15 @@ window.onload = function() {
 
     // simulation
     var sim = new VerletJS(width, height, canvas);
-    sim.gravity = new Vec2(0.0, 5);
-    sim.friction = 0.9;
+    sim.gravity = new Vec2(0.0, 1.3);
+    sim.friction = 0.999;
+    sim.groundFriction = 0.8;
     sim.highlightColor = 'rgba(0, 0, 0, 0)'; //"#4f545c";
 
     // entities
     var min = Math.min(width,height)*0.5;
-    var segments = 20;
-    var cloth = sim.cloth(new Vec2(width/2,height/3), min, min, segments, 1, 5.9);
+    var segments = 30;
+    var cloth = sim.cloth(new Vec2(width/2,height/3), min, min, segments, 1, 4);
 
     cloth.drawConstraints = function(ctx, composite) {
         var deltaW = img.width / (segments - 1);
