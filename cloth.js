@@ -566,6 +566,10 @@ window.addEventListener("load", function() {
             left_dot_ctx.fillStyle = gradient;
             left_dot_ctx.fill();
         }
+        else
+        {
+            left_dot.style.cursor = "url('cursors/choppointer.png'), default";
+        }
     });
 
     left_dot.addEventListener("mouseout", function(ev){
@@ -602,6 +606,10 @@ window.addEventListener("load", function() {
             mid_dot_ctx.fillStyle = '#3b5998';
             mid_dot_ctx.fill();
         }
+        else
+        {
+            mid_dot.style.cursor = "url('cursors/choppointer.png'), default";
+        }
     });
 
     mid_dot.addEventListener("mouseout", function(ev){
@@ -637,6 +645,10 @@ window.addEventListener("load", function() {
             right_dot.style.cursor = "url('cursors/choppeace.png'), default";
             right_dot_ctx.fillStyle = "#00ffb6";
             right_dot_ctx.fill();
+        }
+        else
+        {
+            right_dot.style.cursor = "url('cursors/choppointer.png'), default";
         }
     });
 
