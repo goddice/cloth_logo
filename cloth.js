@@ -2,14 +2,26 @@
  * Created by CelongLiu on 9/20/2016.
  */
 ////////////////////////////////
+////////////////////////////////
+
 var left_world;
 var right_world;
+
+left_world = new VerletJS(700, 700, document.getElementById("left_canvas"));
+var left_triangle = new left_world.Composite();
+right_world = new VerletJS(700, 700, document.getElementById("right_canvas"));
+var right_triangle = new right_world.Composite();
+right_world.gravity = new Vec2(-0.4, 0);
+var left_segs = 15;
+var right_segs = 15;
 
 // canvas
 var background_canvas = document.getElementById("background_canvas");
 var left_canvas = document.getElementById("left_canvas");
 var right_canvas = document.getElementById("right_canvas");
-
+//
+var time_passing = 10000;
+//
 function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
     return {
@@ -58,10 +70,16 @@ background_canvas.addEventListener('mousemove', function (evt) {
     if (inLeft(posX, posY))
     {
         background_canvas.style.cursor = "url('cursors/choppinchleft.png'), default";
+        background_canvas.style.zIndex = 0;
+        right_canvas.style.zIndex = 1;
+        left_canvas.style.zIndex = 2;
     }
     else if (inRight(posX, posY))
     {
         background_canvas.style.cursor = "url('cursors/choppinchright.png'), default";
+        background_canvas.style.zIndex = 0;
+        right_canvas.style.zIndex = 2;
+        left_canvas.style.zIndex = 1;
     }
     else
     {
@@ -75,10 +93,16 @@ right_canvas.addEventListener('mousemove', function (evt) {
     if (inLeft(posX, posY))
     {
         right_canvas.style.cursor = "url('cursors/choppinchleft.png'), default";
+        background_canvas.style.zIndex = 0;
+        right_canvas.style.zIndex = 1;
+        left_canvas.style.zIndex = 2;
     }
     else if (inRight(posX, posY))
     {
         right_canvas.style.cursor = "url('cursors/choppinchright.png'), default";
+        background_canvas.style.zIndex = 0;
+        right_canvas.style.zIndex = 2;
+        left_canvas.style.zIndex = 1;
     }
     else
     {
@@ -92,10 +116,16 @@ left_canvas.addEventListener('mousemove', function (evt) {
     if (inLeft(posX, posY))
     {
         left_canvas.style.cursor = "url('cursors/choppinchleft.png'), default";
+        background_canvas.style.zIndex = 0;
+        right_canvas.style.zIndex = 1;
+        left_canvas.style.zIndex = 2;
     }
     else if (inRight(posX, posY))
     {
         left_canvas.style.cursor = "url('cursors/choppinchright.png'), default";
+        background_canvas.style.zIndex = 0;
+        right_canvas.style.zIndex = 2;
+        left_canvas.style.zIndex = 1;
     }
     else
     {
@@ -218,6 +248,17 @@ function rasterizeTriangle(ctx, img, v1, v2, v3, mirror) {
     ctx.restore();
 }
 
+// constraint
+var left_extractPoint = function (x, y) {
+    let index = y * left_segs - y * (y - 1) / 2 + x;
+    return left_triangle.particles[index];
+};
+
+var right_extractPoint = function (x, y) {
+    let index = y * right_segs - y * (y - 1) / 2 + x;
+    return right_triangle.particles[index];
+};
+
 function initializeWorld() {
     // background
     {
@@ -231,13 +272,10 @@ function initializeWorld() {
         var left_size = 280;
         var left_width = left_size;
         var left_height = left_size;
-        var left_segs = 20;
         var left_interval = left_size / (left_segs - 1);
         var left_startX = 150;
         var left_startY = 230;
 
-        left_world = new VerletJS(700, 700, document.getElementById("left_canvas"));
-        var left_triangle = new left_world.Composite();
 
         // geometry
         for (var j = 0; j < left_segs; j++)
@@ -252,11 +290,6 @@ function initializeWorld() {
                 }
             }
         }
-        // constraint
-        var left_extractPoint = function (x, y) {
-            let index = y * left_segs - y * (y - 1) / 2 + x;
-            return left_triangle.particles[index];
-        };
 
         for (var j = 0; j < left_segs - 1; j++)
         {
@@ -337,7 +370,7 @@ function initializeWorld() {
         };
 
         left_world.composites.push(left_triangle);
-        left_world.gravity = new Vec2(0, 0.3);
+        left_world.gravity = new Vec2(-0.2, 0.4);
         left_world.highlightColor = 'rgba(0, 0, 0, 0)';
     }
 
@@ -347,13 +380,9 @@ function initializeWorld() {
         var right_size = 300;
         var right_width = right_size;
         var right_height = right_size;
-        var right_segs = 20;
         var right_interval = right_size / (right_segs - 1);
         var right_startX = 470;
         var right_startY = 470;
-
-        right_world = new VerletJS(700, 700, document.getElementById("right_canvas"));
-        var right_triangle = new right_world.Composite();
 
         // geometry
         for (var j = 0; j < right_segs; j++)
@@ -369,23 +398,18 @@ function initializeWorld() {
             }
         }
         // constraint
-        var right_extractPoint = function (x, y) {
-            let index = y * right_segs - y * (y - 1) / 2 + x;
-            return right_triangle.particles[index];
-        };
-
         for (var j = 0; j < right_segs - 1; j++)
         {
             for (var i = 0; i < right_segs - j; i++)
             {
                 if (i === right_segs - j - 1)
                 {
-                    right_triangle.constraints.push(new DistanceConstraint(right_extractPoint(j, i), right_extractPoint(j + 1, i - 1), 2));
+                    right_triangle.constraints.push(new DistanceConstraint(right_extractPoint(j, i), right_extractPoint(j + 1, i - 1), 1));
                 }
                 else
                 {
-                    right_triangle.constraints.push(new DistanceConstraint(right_extractPoint(j, i), right_extractPoint(j, i + 1), 2));
-                    right_triangle.constraints.push(new DistanceConstraint(right_extractPoint(j, i), right_extractPoint(j + 1, i), 2));
+                    right_triangle.constraints.push(new DistanceConstraint(right_extractPoint(j, i), right_extractPoint(j, i + 1), 1));
+                    right_triangle.constraints.push(new DistanceConstraint(right_extractPoint(j, i), right_extractPoint(j + 1, i), 1));
                 }
             }
         }
@@ -453,15 +477,59 @@ function initializeWorld() {
         };
 
         right_world.composites.push(right_triangle);
-        right_world.gravity = new Vec2(-0.5, 0.1);
         right_world.highlightColor = 'rgba(0, 0, 0, 0)';
     }
 }
+
+var restorWorld = function ()
+{
+    var left_size = 280;
+    var left_segs = 10;
+    var left_interval = left_size / (left_segs - 1);
+    var left_startX = 150;
+    var left_startY = 230;
+
+
+    // geometry
+    for (var j = 0; j < left_segs; j++)
+    {
+        for (var i = 0; i < left_segs - j; i++)
+        {
+            let p = left_extractPoint(i, j);
+            p = new Vec2(left_startX + i * left_interval, left_startY + j * left_interval);
+        }
+    }
+
+
+    var right_size = 300;
+    var right_interval = right_size / (right_segs - 1);
+    var right_startX = 470;
+    var right_startY = 470;
+
+    // geometry
+    for (var j = 0; j < right_segs; j++)
+    {
+        for (var i = 0; i < right_segs - j; i++)
+        {
+            let p = right_extractPoint(i, j);
+            p.x = right_startX - i * right_interval;
+            p.y = right_startY - j * right_interval;
+            //p = new Vec2(right_startX - i * right_interval, right_startY - j * right_interval);
+        }
+    }
+};
 
 var fps = 32; // the frame rate of the world
 
 function renderWorld() {
     //
+    if (time_passing > 500)
+    {
+        restorWorld();
+    }
+    else {
+        time_passing += 1;
+    }
     right_world.frame(16);
     right_world.draw();
     left_world.frame(16);
@@ -470,6 +538,148 @@ function renderWorld() {
 }
 
 window.addEventListener("load", function() {
+    //
+
+    // left dot
+    var left_dot = document.getElementById("left_dot");
+    left_dot_ctx = left_dot.getContext("2d");
+    var centerX = left_dot.width / 2;
+    var centerY = left_dot.height / 2;
+    var radius = 15;
+
+    left_dot_ctx.beginPath();
+    left_dot_ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+    left_dot_ctx.fillStyle = 'black';
+    left_dot_ctx.fill();
+
+    left_dot.addEventListener("mousemove", function(ev) {
+        var mousePos = getMousePos(left_dot, ev);
+        if (lengthP(mousePos, new Vec2(centerX, centerY)) <= radius)
+        {
+            left_dot.style.cursor = "url('cursors/choppeace.png'), default";
+            var gradient = left_dot_ctx.createRadialGradient(centerX,centerY,0.1,centerX,centerY,radius);
+            gradient.addColorStop(0, "#F8D675");
+            gradient.addColorStop(0.25, "#EE652E");
+            gradient.addColorStop(0.5, "#E63641");
+            gradient.addColorStop(0.75, "#B01387");
+            gradient.addColorStop(1, "#6424CD");
+            left_dot_ctx.fillStyle = gradient;
+            left_dot_ctx.fill();
+        }
+    });
+
+    left_dot.addEventListener("mouseout", function(ev){
+        left_dot_ctx.fillStyle = 'black';
+        left_dot_ctx.fill();
+    });
+
+    left_dot.addEventListener("click", function(ev) {
+        var mousePos = getMousePos(left_dot, ev);
+        if (lengthP(mousePos, new Vec2(centerX, centerY)) <= radius)
+        {
+            var win = window.open("https://www.instagram.com/chop__wood/");
+            win.focus();
+        }
+    });
+
+    // mid dot
+    var mid_dot = document.getElementById("mid_dot");
+    mid_dot_ctx = mid_dot.getContext("2d");
+    var centerX = mid_dot.width / 2;
+    var centerY = mid_dot.height / 2;
+    var radius = 15;
+
+    mid_dot_ctx.beginPath();
+    mid_dot_ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+    mid_dot_ctx.fillStyle = 'black';
+    mid_dot_ctx.fill();
+
+    mid_dot.addEventListener("mousemove", function(ev) {
+        var mousePos = getMousePos(mid_dot, ev);
+        if (lengthP(mousePos, new Vec2(centerX, centerY)) <= radius)
+        {
+            mid_dot.style.cursor = "url('cursors/chopfb.png'), default";
+            mid_dot_ctx.fillStyle = '#3b5998';
+            mid_dot_ctx.fill();
+        }
+    });
+
+    mid_dot.addEventListener("mouseout", function(ev){
+            mid_dot_ctx.fillStyle = 'black';
+            mid_dot_ctx.fill();
+    });
+
+    mid_dot.addEventListener("click", function(ev) {
+        var mousePos = getMousePos(mid_dot, ev);
+        if (lengthP(mousePos, new Vec2(centerX, centerY)) <= radius)
+        {
+            var win = window.open("http://www.facebook.com/chopwooddottv");
+            win.focus();
+        }
+    });
+
+    // right dot
+    var right_dot = document.getElementById("right_dot");
+    right_dot_ctx = right_dot.getContext("2d");
+    var centerX = right_dot.width / 2;
+    var centerY = right_dot.height / 2;
+    var radius = 15;
+
+    right_dot_ctx.beginPath();
+    right_dot_ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+    right_dot_ctx.fillStyle = 'black';
+    right_dot_ctx.fill();
+
+    right_dot.addEventListener("mousemove", function(ev) {
+        var mousePos = getMousePos(right_dot, ev);
+        if (lengthP(mousePos, new Vec2(centerX, centerY)) <= radius)
+        {
+            right_dot.style.cursor = "url('cursors/choppeace.png'), default";
+            right_dot_ctx.fillStyle = "#00ffb6";
+            right_dot_ctx.fill();
+        }
+    });
+
+    right_dot.addEventListener("mouseout", function(ev){
+        right_dot_ctx.fillStyle = 'black';
+        right_dot_ctx.fill();
+    });
+
+    right_dot.addEventListener("click", function(ev) {
+        var mousePos = getMousePos(right_dot, ev);
+        if (lengthP(mousePos, new Vec2(centerX, centerY)) <= radius)
+        {
+            var win = window.open("http://erikau.li");
+            win.focus();
+        }
+    });
+    //
+
+    var address = document.getElementById("address");
+    address.addEventListener('mousemove', function (evt) {
+        address.style.cursor = "url('cursors/chopmaps.png'), default";
+        address.style.color = "yellow";
+        address.style.textDecoration = "line-through";
+    });
+    address.addEventListener('mouseout', function (evt) {
+        address.style.color = "white";
+        address.style.textDecoration = "";
+    });
+
+
+    var email = document.getElementById("email");
+    email.addEventListener('mousemove', function (evt) {
+        email.style.cursor = "url('cursors/chopshake.png'), default";
+        email.style.color = "yellow";
+        email.style.textDecoration = "line-through";
+    });
+    email.addEventListener('mouseout', function (evt) {
+        email.style.color = "white";
+        email.style.textDecoration = "";
+    });
+
+
+    //
     initializeWorld();
     renderWorld();
 });

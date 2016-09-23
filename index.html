@@ -5,13 +5,25 @@
     <meta charset="UTF-8" />
     <script type="text/javascript" src="lib/verlet-1.0.0-min.js"></script>
 </head>
-<body>
-<img src="texture/logo_larger.png" id="logo" style="display: none">
-<img src="texture/left.png" id="left" style="display: none">
-<img src="texture/right.png" id="right" style="display: none">
-<img src="texture/background.png" id="background" style="display: none">
-<canvas id="left_canvas" width="700" height="700" style="position: absolute; top: 100px; left: 300px; z-index: 0; background-color: rgba(0, 0, 0, 0)"></canvas>
-<canvas id="right_canvas" width="700" height="700" style="position: absolute; top: 100px; left: 300px; z-index: 0; background-color: rgba(0, 0, 0, 0)"></canvas>
-<canvas id="background_canvas" width="700" height="700" style="position: absolute; top: 100px; left: 300px; z-index: 0; background-color: rgba(0, 0, 0, 0)"></canvas>
-<script type="text/javascript" src="cloth.js"></script>
+<body style="background-color: #997DA8">
+    <img src="texture/logo_larger.png" id="logo" style="display: none">
+    <img src="texture/left.png" id="left" style="display: none">
+    <img src="texture/right.png" id="right" style="display: none">
+    <img src="texture/background.png" id="background" style="display: none">
+    <div id="drawPad">
+        <canvas id="left_canvas" width="700" height="700" style="position: absolute; top: 100px; left: 300px; z-index: 0; background-color: rgba(0, 0, 0, 0)"></canvas>
+        <canvas id="right_canvas" width="700" height="700" style="position: absolute; top: 100px; left: 300px; z-index: 0; background-color: rgba(0, 0, 0, 0)"></canvas>
+        <canvas id="background_canvas" width="700" height="700" style="position: absolute; top: 100px; left: 300px; z-index: 0; background-color: rgba(0, 0, 0, 0)"></canvas>
+    </div>
+    <script type="text/javascript" src="cloth.js"></script>
+
+    <div style="position: absolute; bottom: 5px; color: white; font-family: Consolas; font-size: 12pt">
+        <div id="address" style="float: left;">141 søuth 5th street 'øffice east' #05 brøøklyn ny 11211</div>
+        <div style="float: left;">&nbsp;718.635.2239</div>
+        <div id = "email" style="float: left;">&nbsp;hellø@chøpwøød.tv</div>
+    </div>
+
+    <canvas id="left_dot" width="40" height="40" style="position: absolute; bottom: 5px; right: 150px"></canvas>
+    <canvas id="mid_dot" width="40" height="40" style="position: absolute; bottom: 5px; right: 100px"></canvas>
+    <canvas id="right_dot" width="40" height="40" style="position: absolute; bottom: 5px; right: 50px"></canvas>
 </body>
